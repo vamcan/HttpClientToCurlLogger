@@ -8,12 +8,10 @@ A .NET Core library to log `HttpClient` requests as cURL commands. Automatically
 - **Automatic Registration**: Works out-of-the-box with single or multiple `HttpClient` instances.
 - **Development Focus**: Ideal for debugging API requests during development.
 
-## Installation
 
-```bash
-dotnet add package HttpClientToCurlLogger
 
 ## Usage
+
 ```bash
 public void ConfigureServices(IServiceCollection services)
 {

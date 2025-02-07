@@ -11,4 +11,16 @@ A .NET Core library to log `HttpClient` requests as cURL commands. Automatically
 ## Installation
 
 ```bash
-dotnet add package HttpClientToCurlLogger﻿
+dotnet add package HttpClientToCurlLogger
+
+```bash
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddCurlLogging(options =>
+    {
+        options.EnableLogging = true; // Set to false to disable
+    });
+
+    // Register your HttpClient(s)
+    services.AddHttpClient("MyClient");
+}

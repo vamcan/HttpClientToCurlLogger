@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -25,10 +26,32 @@ namespace HttpClientToCurlLogger
             if (_options.EnableLogging)
             {
                 var curl = await GenerateCurlCommand(request);
-                _logger.LogInformation(curl);
+                LogCurlCommand(curl);
             }
 
             return await base.SendAsync(request, cancellationToken);
+        }
+
+        private void LogCurlCommand(string curlCommand)
+        {
+            if (_options.UseFormattedOutput)
+            {
+                var separator = new string('=', 80);
+                var formattedOutput = new StringBuilder();
+
+                formattedOutput.AppendLine();
+                formattedOutput.AppendLine(separator);
+                formattedOutput.AppendLine("cURL Command (copy-paste ready):");
+                formattedOutput.AppendLine(separator);
+                formattedOutput.AppendLine(curlCommand);
+                formattedOutput.AppendLine(separator);
+
+                _logger.LogInformation(formattedOutput.ToString());
+            }
+            else
+            {
+                _logger.LogInformation(curlCommand);
+            }
         }
 
         private async Task<string> GenerateCurlCommand(HttpRequestMessage request)
@@ -36,16 +59,25 @@ namespace HttpClientToCurlLogger
             var uri = request.RequestUri;
             var method = request.Method.Method;
 
-            var curlCommand = new StringBuilder($"curl -X {method}");
+            var curlCommand = new StringBuilder();
+            curlCommand.Append("curl");
 
+            var lineSeparator = _options.UseMultiLineFormat ? " \\\n  " : " ";
+
+            // Add method
+            curlCommand.Append($" -X {method}");
+
+            // Add request headers
             foreach (var header in request.Headers)
             {
                 foreach (var value in header.Value)
                 {
-                    curlCommand.Append($" -H \"{header.Key}: {value}\"");
+                    var escapedValue = value.Replace("\"", "\\\"");
+                    curlCommand.Append($"{lineSeparator}-H \"{header.Key}: {escapedValue}\"");
                 }
             }
 
+            // Add content and content headers
             if (request.Content != null)
             {
                 var contentBytes = await request.Content.ReadAsByteArrayAsync();
@@ -54,7 +86,9 @@ namespace HttpClientToCurlLogger
                 foreach (var header in request.Content.Headers)
                 {
                     bufferedContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    curlCommand.Append($" -H \"{header.Key}: {string.Join(", ", header.Value)}\"");
+                    var headerValue = string.Join(", ", header.Value);
+                    var escapedValue = headerValue.Replace("\"", "\\\"");
+                    curlCommand.Append($"{lineSeparator}-H \"{header.Key}: {escapedValue}\"");
                 }
 
                 request.Content = bufferedContent;
@@ -62,12 +96,13 @@ namespace HttpClientToCurlLogger
                 var contentString = Encoding.UTF8.GetString(contentBytes);
                 if (!string.IsNullOrEmpty(contentString))
                 {
-                    contentString = contentString.Replace("\"", "\\\"");
-                    curlCommand.Append($" -d \"{contentString}\"");
+                    var escapedContent = contentString.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "");
+                    curlCommand.Append($"{lineSeparator}-d \"{escapedContent}\"");
                 }
             }
 
-            curlCommand.Append($" \"{uri}\"");
+            // Add URL
+            curlCommand.Append($"{lineSeparator}\"{uri}\"");
 
             return curlCommand.ToString();
         }

@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>HttpClientToCurlLogger</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>HttpClientToCurlLogger</PackageId>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <Authors>Reza Ghasemi</Authors>
         <Company>vamcan</Company>
         <Description>A .NET library to automatically log HttpClient requests as cURL commands for easy debugging and testing.</Description>

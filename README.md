@@ -1,4 +1,4 @@
-﻿# HttpClientToCurlLogger
+# HttpClientToCurlLogger
 
 [![NuGet](https://img.shields.io/nuget/v/HttpClientToCurlLogger.svg)](https://www.nuget.org/packages/HttpClientToCurlLogger/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -89,11 +89,49 @@ curl -X POST -H "Content-Type: application/json; charset=utf-8" -d "{\"name\":\"
 
 You can copy this cURL command directly to your terminal or Postman!
 
+The output will look like this:
+
+```
+================================================================================
+cURL Command (copy-paste ready):
+================================================================================
+curl -X POST \
+  -H "ApiKey: your-api-key" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d "{\"name\":\"John\"}" \
+  "https://api.example.com/users"
+================================================================================
+```
+
 ## Configuration Options
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `EnableLogging` | `bool` | `false` | Enable or disable cURL logging |
+| `UseMultiLineFormat` | `bool` | `true` | Format curl command with line breaks for better readability |
+| `UseFormattedOutput` | `bool` | `true` | Add separators and headers around the curl command |
+
+### Advanced Configuration
+
+```csharp
+services.AddCurlLogging(options =>
+{
+    options.EnableLogging = true;
+    options.UseMultiLineFormat = true;  // Multi-line format with \ continuation
+    options.UseFormattedOutput = true;  // With separators and headers
+});
+```
+
+For compact single-line output (useful for structured logging):
+
+```csharp
+services.AddCurlLogging(options =>
+{
+    options.EnableLogging = true;
+    options.UseMultiLineFormat = false;  // Single line
+    options.UseFormattedOutput = false;  // No separators
+});
+```
 
 ### Environment-Based Configuration
 
@@ -111,7 +149,7 @@ Or use configuration files (`appsettings.json`):
 ```json
 {
   "CurlLogging": {
-    "EnableLogging": true
+    "EnableLogging": true,`n    "UseMultiLineFormat": true,`n    "UseFormattedOutput": true
   }
 }
 ```

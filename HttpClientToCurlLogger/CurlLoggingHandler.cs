@@ -34,23 +34,46 @@ namespace HttpClientToCurlLogger
 
         private void LogCurlCommand(string curlCommand)
         {
-            if (_options.UseFormattedOutput)
+            if (_options.UseConsoleOutput)
             {
-                var separator = new string('=', 80);
-                var formattedOutput = new StringBuilder();
-
-                formattedOutput.AppendLine();
-                formattedOutput.AppendLine(separator);
-                formattedOutput.AppendLine("cURL Command (copy-paste ready):");
-                formattedOutput.AppendLine(separator);
-                formattedOutput.AppendLine(curlCommand);
-                formattedOutput.AppendLine(separator);
-
-                _logger.LogInformation(formattedOutput.ToString());
+                // Write directly to console to avoid structured logging escaping
+                if (_options.UseFormattedOutput)
+                {
+                    var separator = new string('=', 80);
+                    Console.WriteLine();
+                    Console.WriteLine(separator);
+                    Console.WriteLine("cURL Command (copy-paste ready):");
+                    Console.WriteLine(separator);
+                    Console.WriteLine(curlCommand);
+                    Console.WriteLine(separator);
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine(curlCommand);
+                }
             }
             else
             {
-                _logger.LogInformation(curlCommand);
+                // Use logger (may be affected by structured logging formatters)
+                if (_options.UseFormattedOutput)
+                {
+                    var separator = new string('=', 80);
+                    var formattedOutput = new StringBuilder();
+
+                    formattedOutput.AppendLine();
+                    formattedOutput.AppendLine(separator);
+                    formattedOutput.AppendLine("cURL Command (copy-paste ready):");
+                    formattedOutput.AppendLine(separator);
+                    formattedOutput.AppendLine(curlCommand);
+                    formattedOutput.AppendLine(separator);
+
+                    _logger.LogInformation(formattedOutput.ToString());
+                }
+                else
+                {
+                    _logger.LogInformation(curlCommand);
+                }
             }
         }
 

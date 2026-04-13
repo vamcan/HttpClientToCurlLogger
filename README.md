@@ -110,6 +110,7 @@ curl -X POST \
 | `EnableLogging` | `bool` | `false` | Enable or disable cURL logging |
 | `UseMultiLineFormat` | `bool` | `true` | Format curl command with line breaks for better readability |
 | `UseFormattedOutput` | `bool` | `true` | Add separators and headers around the curl command |
+| `UseConsoleOutput` | `bool` | `false` | Write directly to Console instead of ILogger (recommended for structured logging) |
 
 ### Advanced Configuration
 
@@ -117,12 +118,27 @@ curl -X POST \
 services.AddCurlLogging(options =>
 {
     options.EnableLogging = true;
-    options.UseMultiLineFormat = true;  // Multi-line format with \ continuation
-    options.UseFormattedOutput = true;  // With separators and headers
+    options.UseMultiLineFormat = true;   // Multi-line format with \ continuation
+    options.UseFormattedOutput = true;   // With separators and headers
+    options.UseConsoleOutput = false;    // Use ILogger (default)
 });
 ```
 
-For compact single-line output (useful for structured logging):
+**For Structured Logging (Serilog, NLog with JSON formatters):**
+
+If you're using structured logging that outputs JSON (like Serilog with JSON formatter or Elastic.CommonSchema.Serilog), enable `UseConsoleOutput` to bypass the logger and write directly to console for readable output:
+
+```csharp
+services.AddCurlLogging(options =>
+{
+    options.EnableLogging = true;
+    options.UseMultiLineFormat = true;   // Multi-line format
+    options.UseFormattedOutput = true;   // With separators
+    options.UseConsoleOutput = true;     // Direct console output (bypasses structured logging)
+});
+```
+
+For compact single-line output (useful for simple logging):
 
 ```csharp
 services.AddCurlLogging(options =>
@@ -149,7 +165,7 @@ Or use configuration files (`appsettings.json`):
 ```json
 {
   "CurlLogging": {
-    "EnableLogging": true,`n    "UseMultiLineFormat": true,`n    "UseFormattedOutput": true
+    "EnableLogging": true,`n    "UseMultiLineFormat": true,`n    \"UseFormattedOutput\": true,`n    \"UseConsoleOutput\": true
   }
 }
 ```

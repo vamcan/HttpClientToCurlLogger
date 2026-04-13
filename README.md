@@ -165,7 +165,10 @@ Or use configuration files (`appsettings.json`):
 ```json
 {
   "CurlLogging": {
-    "EnableLogging": true,`n    "UseMultiLineFormat": true,`n    \"UseFormattedOutput\": true,`n    \"UseConsoleOutput\": true
+    "EnableLogging": true,
+    "UseMultiLineFormat": true,
+    "UseFormattedOutput": true,
+    "UseConsoleOutput": true
   }
 }
 ```

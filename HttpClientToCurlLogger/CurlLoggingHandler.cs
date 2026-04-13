@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,18 +11,18 @@ namespace HttpClientToCurlLogger
     public class CurlLoggingHandler : DelegatingHandler
     {
         private readonly ILogger<CurlLoggingHandler> _logger;
-        private readonly IOptions<CurlLoggingOptions> _options;
+        private readonly CurlLoggingOptions _options;
 
         public CurlLoggingHandler(IOptions<CurlLoggingOptions> options, ILogger<CurlLoggingHandler> logger)
         {
-            _options = options;
+            _options = options.Value;
             _logger = logger;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (_options.Value.EnableLogging)
+            if (_options.EnableLogging)
             {
                 var curl = await GenerateCurlCommand(request);
                 _logger.LogInformation(curl);
@@ -41,20 +42,19 @@ namespace HttpClientToCurlLogger
             {
                 foreach (var value in header.Value)
                 {
-                    curlCommand.Append($" -H '{header.Key}: {value}'");
+                    curlCommand.Append($" -H \"{header.Key}: {value}\"");
                 }
             }
 
             if (request.Content != null)
             {
-                // Buffer the content to avoid interfering with the original request
                 var contentBytes = await request.Content.ReadAsByteArrayAsync();
                 var bufferedContent = new ByteArrayContent(contentBytes);
 
-                // Copy the content headers
                 foreach (var header in request.Content.Headers)
                 {
-                    bufferedContent.Headers.Add(header.Key, header.Value);
+                    bufferedContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    curlCommand.Append($" -H \"{header.Key}: {string.Join(", ", header.Value)}\"");
                 }
 
                 request.Content = bufferedContent;
@@ -62,13 +62,12 @@ namespace HttpClientToCurlLogger
                 var contentString = Encoding.UTF8.GetString(contentBytes);
                 if (!string.IsNullOrEmpty(contentString))
                 {
-                    // Escape single quotes in content
-                    contentString = contentString.Replace("'", "'\"'\"'");
-                    curlCommand.Append($" -d '{contentString}'");
+                    contentString = contentString.Replace("\"", "\\\"");
+                    curlCommand.Append($" -d \"{contentString}\"");
                 }
             }
 
-            curlCommand.Append($" '{uri}'");
+            curlCommand.Append($" \"{uri}\"");
 
             return curlCommand.ToString();
         }

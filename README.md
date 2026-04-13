@@ -7,13 +7,13 @@ A lightweight .NET library that automatically logs all `HttpClient` requests as 
 
 ## Features
 
-âœ… **Automatic Logging** - Captures all `HttpClient` requests automatically  
-âœ… **cURL Format** - Generates ready-to-use cURL commands  
-âœ… **Easy Integration** - Single line of configuration  
-âœ… **Toggle On/Off** - Enable or disable logging via configuration  
-âœ… **Multiple Clients** - Works with all registered `HttpClient` instances  
-âœ… **Headers & Body** - Includes headers and request body in the cURL output  
-âœ… **.NET Standard 2.0** - Compatible with .NET Core 2.0+ and .NET Framework 4.6.1+
+**Automatic Logging** - Captures all `HttpClient` requests automatically  
+**cURL Format** - Generates ready-to-use cURL commands  
+**Easy Integration** - Single line of configuration  
+**Toggle On/Off** - Enable or disable logging via configuration  
+**Multiple Clients** - Works with all registered `HttpClient` instances  
+**Headers & Body** - Includes headers and request body in the cURL output  
+**.NET Standard 2.0** - Compatible with .NET Core 2.0+ and .NET Framework 4.6.1+
 
 ## Installation
 
@@ -141,10 +141,10 @@ The library uses an `IHttpMessageHandlerBuilderFilter` to automatically inject a
 
 ## Use Cases
 
-- ðŸ› **Debugging** - Quickly see what requests your application is making
-- ðŸ§ª **Testing** - Copy cURL commands to test APIs manually
-- ðŸ“ **Documentation** - Share API request examples with your team
-- ðŸ” **Troubleshooting** - Diagnose integration issues with external APIs
+- **Debugging** - Quickly see what requests your application is making
+- **Testing** - Copy cURL commands to test APIs manually
+- **Documentation** - Share API request examples with your team
+- **Troubleshooting** - Diagnose integration issues with external APIs
 
 ## Best Practices
 
@@ -162,7 +162,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Author
 
-[vamcan](https://github.com/vamcan)
+[Reza Ghasemi](https://github.com/vamcan)
 
 ## Repository
 
